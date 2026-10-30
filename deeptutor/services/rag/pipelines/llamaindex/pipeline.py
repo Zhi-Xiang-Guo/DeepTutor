@@ -319,7 +319,9 @@ class LlamaIndexPipeline:
         # on the existing embedding/retrieval path.
         from .exercise_lookup import lookup_exercises, requested_exercises
 
-        if requested_exercises(query)[0]:
+        # Exact lookup lacks document filtering and canonical page evidence.
+        # Scoped callers must use the existing document-aware retrieval path.
+        if kwargs.get("document_keys") is None and requested_exercises(query)[0]:
             kb_dir = resolve_kb_dir(self.kb_base_dir, kb_name)
             try:
                 exact = await asyncio.to_thread(
